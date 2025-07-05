@@ -1,0 +1,43 @@
+Average Salary = 
+    AVERAGE(fact_data_salary[salary_in_usd])
+
+
+--------------------------------------------
+Average Salary Growth = 
+    DIVIDE(
+        [Average Salary Variance],
+        [Average Salary PY]
+    )
+
+--------------------------------------------
+Average Salary Growth Arrow = 
+ VAR _upArrow = UNICHAR(129129)
+ VAR _downArrow = UNICHAR(129131)
+ VAR _growth = [Average Salary Growth]
+ VAR _variance = [Average Salary Variance]
+ VAR _blank = ISBLANK([Average Salary])
+
+ RETURN
+    IF(
+        _blank, BLANK(),
+        IF(
+            _variance > 0,
+            ROUND(_growth * 100,1) & "% " & _upArrow,
+            ROUND(_growth * 100,2) & "% " & _downArrow
+        )
+    )
+
+-----------------------------------------------
+Average Salary PY = 
+    VAR _prev_year = MAX(fact_data_salary[work_year]) - 1
+
+
+RETURN 
+    CALCULATE(
+        [Average Salary],
+        fact_data_salary[work_year] = _prev_year
+    )
+
+----------------------------------------------
+Average Salary Variance = 
+    [Average Salary] - [Average Salary PY]
